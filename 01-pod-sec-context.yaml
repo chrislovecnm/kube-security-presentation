@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sc-pod
+spec:
+  automountServiceAccountToken: false
+  securityContext:
+    # When the Pod starts, it runs with user ID 3042
+    runAsUser: 3042 
+    # When the Pod starts, it runs with group id 4042
+    runAsGroup: 4042
+    # Any files are written with id 5042
+    fsGroup: 5042
+    # Any volumes are changed from root ownership
+    # to the above ids
+    fsGroupChangePolicy: "OnRootMismatch"
+  volumes:
+  - name: sc-vol
+    emptyDir: {}
+  containers:
+    - name: sc-container
+      image: debian:bookworm-20221004-slim
+      command: ["tail", "-f", "/dev/null"]
+      volumeMounts:
+      - name: sc-vol
+        mountPath: /data/foo

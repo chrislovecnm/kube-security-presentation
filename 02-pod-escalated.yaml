@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: escalated-pod
+spec:
+  # We moved the pod to the host network
+  hostNetwork: true
+  volumes:
+  - name: escalated-vol
+    emptyDir: {}
+  containers:
+    - name: escalated-container
+      image: debian:bookworm-20221004-slim
+      command: ["tail", "-f", "/dev/null"]
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+          add: 
+            - NET_ADMIN
+            - BPF

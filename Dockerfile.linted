@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1
+# We set a specific version of node to use
+FROM node:18-alpine3.15
+
+# Added labels to identify container
+LABEL com.example.version="0.0.1-beta"
+LABEL vendor1="ACME Incorporated"
+LABEL vendor2=ZENITH\ Incorporated
+LABEL com.example.release-date="2015-02-12"
+LABEL com.example.version.is-production=""
+
+# Added version numbers to tag binaries
+RUN apk add --no-cache \
+  g++=10.3.1_git20211027-r0 \
+  gosu=1.14-r7 \
+  make=4.3-r0 \
+  python3=3.10.8-r0 
+# add as cached and curl is ephimeral
+RUN apk add curl=7.80.0-r3  
+
+# Created a node group
+RUN addgroup -S node && node -S node -G node
+
+# Using WORKDIR
+WORKDIR /app
+COPY . .
+
+# setting the permissions on the node application
+# code
+RUN yarn install --production \
+ chown -R node:node ./*
+
+# Now using ENTRYPOINT, and using gosu to run node as
+# the node user.
+ENTRYPOINT ["gosu", "node", "node"]
+CMD ["src/index.js"]
+EXPOSE 3000

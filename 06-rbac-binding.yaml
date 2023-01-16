@@ -1,0 +1,14 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: Pod-labeler
+  namespace: rbac-example
+subjects:
+  # List of service accounts to bind
+  - kind: ServiceAccount
+    name: network-sa
+roleRef:
+  # The role to bind
+  kind: Role
+  name: network-role
+  apiGroup: rbac.authorization.k8s.io
